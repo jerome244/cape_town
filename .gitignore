@@ -1,127 +1,59 @@
-# ===============================
-# OS FILES
-# ===============================
-.DS_Store
-Thumbs.db
-
-# ===============================
-# PYTHON / DJANGO
-# ===============================
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.log
-*.pot
-*.pyc
-
-# Django specific
-db.sqlite3
-media/
-staticfiles/
-static_root/
-*.mo
-
-# Virtual environment
-venv/
-env/
-.venv/
-ENV/
-.Python
-
-# IDE / Editor
-.vscode/
-.idea/
-*.code-workspace
-
-# Pytest / coverage / reports
-htmlcov/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.pytest_cache/
-test-results/
-.tox/
-.mypy_cache/
-.dmypy.json
-.pyre/
-
-# ===============================
-# NODE / NEXT.JS FRONTEND
-# ===============================
 # dependencies
-frontend/node_modules/
-frontend/.pnp/
+node_modules/
+.pnp
 .pnp.js
 
+# testing
+coverage/
+.nyc_output/
+
+# next.js build output
+.next/
+out/
+dist/
+build/
+
 # production
-frontend/.next/
-frontend/out/
-frontend/build/
+*.log
+*.csv
 
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# misc
+# environment variables
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.next/
-dist/
-coverage/
 
-# ===============================
-# ENVIRONMENT VARIABLES
-# ===============================
-.env
-*.env
-.env.*
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# ===============================
-# MISC
-# ===============================
+# editor folders
+.vscode/
+.idea/
 *.swp
-*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# linux
 *~
-*.bak
-*.tmp
-*.temp
 
-# ===============================
-# BACKUPS / GENERATED FILES
-# ===============================
-__MACOSX/
-*.zip
-*.tar
-*.gz
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# ===============================
-# PROJECT SPECIFIC
-# ===============================
-# SQLite backups or temp data
-backend/db.sqlite3
-backend/db.sqlite3-journal
+# typescript
+*.tsbuildinfo
 
-# Uploads / user files
-backend/media/
-backend/uploads/
-
-# Local settings overrides
-backend/backend/local_settings.py
-
-# Next.js cache
-frontend/.turbo/
-frontend/.vercel/
-
-# Coverage or reports
-frontend/coverage/
-frontend/junit.xml
-
-# Mac Finder metadata
-Icon?
+# local files
+*.local
+*.env.backup
+tmp/
+.cache/
+.vercel/

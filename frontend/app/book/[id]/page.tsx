@@ -1,4 +1,3 @@
-import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import BookingForm from '../../../components/BookingForm';
 import Reviews from '../../../components/Reviews';
@@ -63,45 +62,39 @@ async function getPackages(): Promise<Package[]> {
 }
 
 export default async function BookPage({ params }: { params: { id: string } }) {
-  const list = await getPackages(); // ✅ now defined
+  const list = await getPackages();
   const pkg = list.find((p) => String(p.id) === params.id);
 
   if (!pkg) {
     return (
-      <main>
-        <Header />
-        <div className="max-w-3xl mx-auto px-4 py-16">
-          <h1 className="text-3xl font-semibold">Package not found</h1>
-          <p className="mt-2">Go back and choose another package.</p>
-        </div>
-        <Footer />
+      <main className="max-w-3xl mx-auto px-4 py-16">
+        <h1 className="text-3xl font-semibold">Package not found</h1>
+        <p className="mt-2">Go back and choose another package.</p>
       </main>
     );
   }
 
   return (
-    <main>
-      <Header />
-      <div className="max-w-4xl mx-auto px-4 py-16">
-        <h1 className="text-3xl font-semibold">Book: {pkg.title}</h1>
-        <p className="text-gray-600 mt-1">{pkg.subtitle}</p>
+    <main className="max-w-4xl mx-auto px-4 py-16">
+      <h1 className="text-3xl font-semibold">Book: {pkg.title}</h1>
+      <p className="text-gray-600 mt-1">{pkg.subtitle}</p>
 
-        <div className="bg-white rounded-2xl shadow mt-6 p-5">
-          <div className="text-sm text-gray-700">
-            <strong>From:</strong> {pkg.currency} {pkg.price} ·{' '}
-            <strong>Highlights:</strong> {pkg.highlights.join(' • ')}
-          </div>
-
-          <div className="mt-6">
-            <BookingForm pkg={pkg} />
-          </div>
+      <div className="bg-white rounded-2xl shadow mt-6 p-5">
+        <div className="text-sm text-gray-700">
+          <strong>From:</strong> {pkg.currency} {pkg.price} ·{' '}
+          <strong>Highlights:</strong> {pkg.highlights.join(' • ')}
         </div>
 
-        {/* Reviews section */}
-        <section className="mt-12">
-          <Reviews pkgId={pkg.id} pkgTitle={pkg.title} />
-        </section>
+        <div className="mt-6">
+          <BookingForm pkg={pkg} />
+        </div>
       </div>
+
+      {/* Reviews section */}
+      <section className="mt-12">
+        <Reviews pkgId={pkg.id} pkgTitle={pkg.title} />
+      </section>
+
       <Footer />
     </main>
   );
