@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '../../../components/Footer';
-import BookingForm from '../../../components/BookingForm';
+// import BookingForm from '../../../components/BookingForm'; // HIDDEN (booking flow replaced)
 import { getPackages } from '../../../lib/packages';
 
 const FALLBACK_IMG =
@@ -20,7 +20,10 @@ export default async function BookPage({ params }: { params: { id: string } }) {
             <h1 className="text-3xl font-semibold tracking-tight">Package not found</h1>
             <p className="mt-2 text-gray-600">Go back and choose another package.</p>
             <div className="mt-6">
-              <Link href="/" className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gray-900 text-white font-medium hover:bg-black focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/30 transition">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gray-900 text-white font-medium hover:bg-black focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/30 transition"
+              >
                 <span aria-hidden>←</span> Back to Home
               </Link>
             </div>
@@ -33,28 +36,36 @@ export default async function BookPage({ params }: { params: { id: string } }) {
 
   return (
     <main className="pb-24 antialiased leading-relaxed bg-[radial-gradient(80rem_40rem_at_10%_-20%,#e8f1ff_0%,transparent_40%),radial-gradient(70rem_40rem_at_110%_-10%,#ffe9e3_0%,transparent_35%)]">
-
-
       {/* HERO (spacious & highly legible) */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="relative overflow-hidden rounded-3xl h-[22rem] md:h-[28rem] shadow ring-1 ring-black/5 group">
+        <div className="relative overflow-hidden rounded-3xl h-[34rem] md:h-[44rem] lg:h-[52rem] shadow ring-1 ring-black/5 group">
           <Image
             src={pkg.image || FALLBACK_IMG}
             alt={pkg.title}
             fill
             priority
-            className="object-cover transition duration-500 group-hover:scale-[1.02]"
+            sizes="100vw"
+            quality={90}
+            className="transition duration-500 group-hover:scale-[1.02]"
+            style={{
+              objectFit: 'cover',        // ensure crop (no distortion)
+              objectPosition: 'center',  // adjust if needed, e.g. 'center 30%'
+            }}
           />
 
           {/* stronger overlay for contrast */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
           {/* text block with ample padding & relaxed line-height */}
-          <div className="absolute bottom-6 left-6 right-6 text-white">
-            <div className="max-w-3xl rounded-2xl bg-black/35 backdrop-blur-sm ring-1 ring-white/15 px-5 md:px-6 py-4 md:py-5 space-y-2.5">
-              <h1 className="text-3xl md:text-4xl font-semibold leading-tight tracking-tight">{pkg.title}</h1>
+          <div className="absolute bottom-8 left-6 right-6 text-white">
+            <div className="max-w-3xl rounded-2xl bg-black/35 backdrop-blur-sm ring-1 ring-white/15 px-6 py-5 space-y-3">
+              <h1 className="text-4xl md:text-5xl font-semibold leading-tight tracking-tight">
+                {pkg.title}
+              </h1>
               {pkg.subtitle && (
-                <p className="text-base md:text-lg leading-relaxed text-white/95">{pkg.subtitle}</p>
+                <p className="text-lg md:text-xl leading-relaxed text-white/95">
+                  {pkg.subtitle}
+                </p>
               )}
               <div className="pt-1 flex flex-wrap items-center gap-3 text-sm md:text-base text-white/95">
                 {(pkg as any).location && (
@@ -79,6 +90,9 @@ export default async function BookPage({ params }: { params: { id: string } }) {
         <section aria-label="Package details" className="space-y-6">
           <div className="rounded-3xl border bg-white p-6 shadow-sm">
             <h2 className="text-lg font-semibold tracking-tight">What to know</h2>
+
+            {/* HIDDEN: descriptive paragraph about curated package */}
+            {/*
             <div className="mt-2 space-y-4 text-gray-700">
               <p>
                 This is a curated package — activities are predefined and handled by your planner.
@@ -88,8 +102,10 @@ export default async function BookPage({ params }: { params: { id: string } }) {
                 You can discuss small adjustments with your planner after submitting your request.
               </p>
             </div>
+            */}
+
             {(pkg as any).highlights?.length ? (
-              <ul className="mt-6 grid sm:grid-cols-2 gap-3">
+              <ul className="mt-4 grid sm:grid-cols-2 gap-3">
                 {(pkg as any).highlights.map((h: string, i: number) => (
                   <li key={i} className="flex items-start gap-2 rounded-2xl border p-3 text-sm">
                     <span aria-hidden>✨</span>
@@ -98,16 +114,6 @@ export default async function BookPage({ params }: { params: { id: string } }) {
                 ))}
               </ul>
             ) : null}
-          </div>
-
-          {/* Trust strip */}
-          <div className="rounded-3xl border bg-white p-5 shadow-sm">
-            <ul className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm text-gray-700">
-              <li className="flex items-center gap-2"><span>🔒</span> Secure checkout</li>
-              <li className="flex items-center gap-2"><span>📅</span> Flexible dates</li>
-              <li className="flex items-center gap-2"><span>👨‍💼</span> Dedicated planner</li>
-              <li className="flex items-center gap-2"><span>✅</span> No hidden fees</li>
-            </ul>
           </div>
 
           {/* FAQ (optional) */}
@@ -129,10 +135,11 @@ export default async function BookPage({ params }: { params: { id: string } }) {
           ) : null}
         </section>
 
-        {/* Right: sticky booking panel */}
+        {/* Right: contact card (booking via contact) */}
         <aside id="booking" className="md:sticky md:top-6 h-max">
+          {/* HIDDEN: full booking panel with price, form, guarantees, callout */}
+          {/*
           <div className="rounded-3xl border bg-white p-6 shadow-sm">
-            {/* Price header (if available) */}
             <div className="flex items-end justify-between">
               <div>
                 <p className="text-sm text-gray-500">From</p>
@@ -149,16 +156,42 @@ export default async function BookPage({ params }: { params: { id: string } }) {
               <BookingForm pkg={pkg as any} />
             </div>
 
-            {/* Guarantees */}
             <div className="mt-4 grid grid-cols-3 text-center text-xs text-gray-600">
               <div className="flex flex-col items-center gap-1"><span>🛡️</span> Secure</div>
               <div className="flex flex-col items-center gap-1"><span>↩️</span> Flexible</div>
               <div className="flex flex-col items-center gap-1"><span>🤝</span> Human support</div>
             </div>
 
-            {/* Callout */}
             <div className="mt-5 rounded-2xl bg-gray-50 p-4 text-sm text-gray-700 ring-1 ring-gray-200">
               Have special requests? <Link href="/contact" className="underline">Contact us</Link> and we’ll tailor the details.
+            </div>
+          </div>
+          */}
+
+          {/* Replacement: Contact details for booking */}
+          <div className="rounded-3xl border bg-white p-6 shadow-sm">
+            <h3 className="text-lg font-semibold tracking-tight">Book this trip</h3>
+            <p className="mt-1 text-gray-600">Contact us to confirm your dates and finalize your booking:</p>
+
+            <div className="mt-4 space-y-3 text-gray-800">
+              <div>
+                <div className="text-sm text-gray-500">Email</div>
+                <a href="mailto:david.ndong@icloud.com" className="hover:underline">
+                  david.ndong@icloud.com
+                </a>
+              </div>
+
+              <div>
+                <div className="text-sm text-gray-500">Phone</div>
+                <div className="space-y-1">
+                  <a href="tel:+27753530288" className="block hover:underline">+27 753530288</a>
+                  <a href="tel:+27663240237" className="block hover:underline">+27 66 324 0237</a>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 text-xs text-gray-600">
+              Please include your preferred dates and number of travelers. We’ll get back to you shortly.
             </div>
           </div>
         </aside>
