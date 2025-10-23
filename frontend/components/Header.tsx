@@ -16,7 +16,7 @@ export default function Header() {
 
   async function handleLogout() {
     try {
-      localStorage.removeItem("access");          // client token
+      localStorage.removeItem("access");                 // client token
       await fetch("/api/auth/logout", { method: "POST" }); // clears httpOnly refresh cookie
     } catch {}
     setHasAccess(false);
@@ -34,18 +34,30 @@ export default function Header() {
         <nav className="flex items-center gap-6 text-sm">
           <a href="#features" className="hover:underline">Features</a>
           <a href="#packages" className="hover:underline">Packages</a>
+
+          {/* HIDDEN: Bookings */}
+          {/*
           <Link href="/bookings" className="hover:underline">Bookings</Link>
+          */}
+
           <a href="#contact" className="hover:underline">Contact</a>
 
           {!hasAccess ? (
             <>
+              {/* HIDDEN: Login */}
+              {/*
               <Link href="/login" className="hover:underline">Login</Link>
+              */}
+
+              {/* HIDDEN: Register */}
+              {/*
               <Link
                 href="/register"
                 className="rounded-md border px-3 py-1 hover:bg-gray-50"
               >
                 Register
               </Link>
+              */}
             </>
           ) : (
             <>
