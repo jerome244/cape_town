@@ -66,26 +66,79 @@ export default async function PackageDetail({
             </Link>
           </div>
 
-          {/* Highlights under buttons */}
-          {pkg.highlights?.length ? (
-            <section className="mt-6">
-              <h2 className="text-lg font-semibold mb-2">Highlights</h2>
-              <ul className="list-none p-0 m-0 flex flex-wrap gap-2">
-                {pkg.highlights.map((h, i) => (
+          {/* Activities (detailed list, with emojis) */}
+          {pkg.included?.length ? (
+            <section className="mt-10">
+              <h2 className="text-xl font-semibold">Activities</h2>
+              <p className="text-gray-600 mt-1">
+                A curated list of experiences included in this package.
+              </p>
+
+              <ol className="mt-5 space-y-4">
+                {pkg.included.map((a, i) => (
                   <li
-                    key={i}
-                    className="px-3 py-1 rounded-full bg-gray-100 text-sm text-gray-700 border border-gray-200"
-                    title={h}
+                    key={a.name + i}
+                    className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4"
                   >
-                    {h}
+                    <div className="flex items-start">
+                      <div className="mt-1 mr-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200">
+                        <span className="text-sm font-semibold">{i + 1}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-base font-semibold">{a.name}</h3>
+                        {a.description ? (
+                          <p className="mt-1 text-gray-700">{a.description}</p>
+                        ) : null}
+                        {(pkg.location || null) && (
+                          <div className="mt-3 flex flex-wrap gap-2 text-sm text-gray-600">
+                            {pkg.location ? (
+                              <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2 py-0.5">
+                                <span aria-hidden>📍</span> {pkg.location}
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </li>
                 ))}
-                <li className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm">
-                  ✨ Flexible dates
-                </li>
-              </ul>
+              </ol>
             </section>
           ) : null}
+
+          {/* Transport service callout */}
+          <section className="mt-10">
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <h2 className="text-lg font-semibold text-emerald-900">
+                Premium Transport (Optional)
+              </h2>
+              <p className="text-emerald-800 mt-1">
+                Travel in comfort with our luxury vehicles and professional chauffeurs.
+              </p>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2 text-emerald-900">
+                <li className="flex items-start gap-2">
+                  <span aria-hidden>🚘</span>
+                  Luxury, air-conditioned fleet
+                </li>
+                <li className="flex items-start gap-2">
+                  <span aria-hidden>👔</span>
+                  Professional, multilingual chauffeurs
+                </li>
+                <li className="flex items-start gap-2">
+                  <span aria-hidden>🕒</span>
+                  Flexible schedules tailored to you
+                </li>
+                <li className="flex items-start gap-2">
+                  <span aria-hidden>🛎️</span>
+                  Door-to-door convenience
+                </li>
+                <li className="flex items-start gap-2">
+                  <span aria-hidden>🌍</span>
+                  Exclusive city tours & insider tips
+                </li>
+              </ul>
+            </div>
+          </section>
         </div>
       </div>
 

@@ -1,46 +1,41 @@
-// components/PackageCard.tsx
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+
+export type ActivityDetail = { name: string; description?: string };
 
 export type Package = {
   id: number;
   title: string;
   subtitle: string;
   image: string;
-  highlights: string[];
+  highlights?: string[];           // now optional
+  included?: ActivityDetail[];     // new optional (for fallback)
 };
 
 const FALLBACK_IMG =
   'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop';
 
 /**
- * Marquee-style activities row (always auto-scrolls).
- * - Duplicates items to create a seamless loop.
- * - Pauses on hover/focus.
- * - If the user has reduced-motion enabled, it still animates (per your request).
- *   Change `forceMotion` to false if you want to respect reduced motion.
+ * Marquee-style activities row (auto-scrolls).
  */
-function ActivitiesMarquee({ items, speedSec = 22, forceMotion = true }: { items: string[]; speedSec?: number; forceMotion?: boolean }) {
+function ActivitiesMarquee({
+  items,
+  speedSec = 22,
+  forceMotion = true,
+}: { items: string[]; speedSec?: number; forceMotion?: boolean }) {
   if (!items?.length) return null;
-
-  const loop = items.concat(items); // duplicate for seamless loop
+  const loop = items.concat(items);
 
   return (
     <div className="relative mt-2">
-      <div
-        className="overflow-hidden rounded-lg bg-gray-50 px-0 py-2"
-        // Pause on hover/focus
-        style={{}}
-      >
+      <div className="overflow-hidden rounded-lg bg-gray-50 px-0 py-2">
         <div className="relative">
           <div
             className={`flex gap-2 whitespace-nowrap will-change-transform ${
-              // If you want to honor reduced motion, replace with: 'motion-safe:animate-none'
               forceMotion ? 'animate-marquee' : 'motion-safe:animate-marquee'
             }`}
-            // Control speed via CSS var
             style={{ ['--marquee-duration' as any]: `${speedSec}s` }}
           >
             {loop.map((h, i) => (
@@ -56,23 +51,12 @@ function ActivitiesMarquee({ items, speedSec = 22, forceMotion = true }: { items
         </div>
       </div>
 
-      {/* Local styles for marquee */}
       <style jsx>{`
-        .animate-marquee {
-          animation: marquee var(--marquee-duration, 22s) linear infinite;
-        }
-        /* Pause on hover/focus within container */
-        .animate-marquee:focus,
-        .animate-marquee:hover {
-          animation-play-state: paused;
-        }
+        .animate-marquee { animation: marquee var(--marquee-duration, 22s) linear infinite; }
+        .animate-marquee:focus, .animate-marquee:hover { animation-play-state: paused; }
         @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
       `}</style>
     </div>
@@ -83,7 +67,13 @@ export default function PackageCard({ p }: { p: Package }) {
   const [src, setSrc] = useState(p.image);
   const [rating, setRating] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
 
-  // Optional: rating preview from localStorage (if you kept reviews)
+  // derive marquee items: highlights -> included names -> []
+  const marqueeItems =
+    (p.highlights && p.highlights.length > 0
+      ? p.highlights
+      : (p.included?.map((a) => a.name) ?? [])
+    );
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(`pj_reviews_${p.id}`);
@@ -133,11 +123,7 @@ export default function PackageCard({ p }: { p: Package }) {
         )}
 
         {/* Activities at bottom — auto scrolling */}
-        <ActivitiesMarquee items={p.highlights} speedSec={22} />
-        {/* speedSec smaller = faster; e.g. 14 for snappier */}
-        {/* To slow down: speedSec={30} */}
-        {/* To honor reduced-motion: set forceMotion={false} */}
-        {/* <ActivitiesMarquee items={p.highlights} speedSec={22} forceMotion={false} /> */}
+        <ActivitiesMarquee items={marqueeItems} speedSec={22} />
 
         {/* CTA */}
         <div className="mt-4 flex items-center justify-end">
