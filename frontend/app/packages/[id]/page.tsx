@@ -1,4 +1,3 @@
-import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,7 +15,6 @@ type Package = {
 };
 
 async function getPackages(): Promise<Package[]> {
-  // use your real fetch if available; fallback demo:
   return [
     {
       id: 1,
@@ -25,9 +23,10 @@ async function getPackages(): Promise<Package[]> {
       price: 499,
       currency: 'EUR',
       cta: 'Book now',
-      image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop',
+      image:
+        'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop',
       highlights: ['Breakfast included', 'Louvre tickets', 'Seine cruise'],
-      location: 'Paris, France'
+      location: 'Paris, France',
     },
     {
       id: 2,
@@ -36,9 +35,10 @@ async function getPackages(): Promise<Package[]> {
       price: 1199,
       currency: 'EUR',
       cta: 'Explore',
-      image: 'https://images.unsplash.com/photo-1506968430777-bf7784a87f22?q=80&w=1200&auto=format&fit=crop',
+      image:
+        'https://images.unsplash.com/photo-1506968430777-bf7784a87f22?q=80&w=1200&auto=format&fit=crop',
       highlights: ['Ferry passes', 'Santorini sunset', 'Mykonos tour'],
-      location: 'Santorini, Greece'
+      location: 'Santorini, Greece',
     },
     {
       id: 3,
@@ -47,21 +47,21 @@ async function getPackages(): Promise<Package[]> {
       price: 899,
       currency: 'EUR',
       cta: 'Discover',
-      image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
+      image:
+        'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
       highlights: ['Ski pass', 'Spa access', 'Guided hike'],
-      location: 'Zermatt, Switzerland'
-    }
+      location: 'Zermatt, Switzerland',
+    },
   ];
 }
 
 export default async function PackageDetail({ params }: { params: { id: string } }) {
   const list = await getPackages();
-  const pkg = list.find(p => String(p.id) === params.id);
+  const pkg = list.find((p) => String(p.id) === params.id);
 
   if (!pkg) {
     return (
       <main>
-        <Header />
         <div className="max-w-4xl mx-auto px-4 py-16">
           <h1 className="text-3xl font-semibold">Package not found</h1>
         </div>
@@ -72,28 +72,31 @@ export default async function PackageDetail({ params }: { params: { id: string }
 
   return (
     <main>
-      <Header />
       <div className="max-w-6xl mx-auto px-4 py-12">
-        {/* Hero image */}
-        <div style={{ position:'relative', width:'100%', height:'20rem', overflow:'hidden', borderRadius:'1rem' }}>
-          <Image src={pkg.image} alt={pkg.title} fill style={{ objectFit:'cover' }} />
+        <div style={{ position: 'relative', width: '100%', height: '20rem', overflow: 'hidden', borderRadius: '1rem' }}>
+          <Image src={pkg.image} alt={pkg.title} fill style={{ objectFit: 'cover' }} />
         </div>
 
-        {/* Content */}
-        <div className="mt-8" style={{ maxWidth:'800px' }}>
+        <div className="mt-8" style={{ maxWidth: '800px' }}>
           <h1 className="text-3xl font-bold">{pkg.title}</h1>
           <p className="text-gray-600 mt-1">{pkg.subtitle}</p>
-          <div className="mt-3 text-xl font-semibold">{pkg.currency} {pkg.price}</div>
+          <div className="mt-3 text-xl font-semibold">
+            {pkg.currency} {pkg.price}
+          </div>
 
-          <ul className="flex mt-3" style={{ gap:'.5rem', flexWrap:'wrap' }}>
-            {pkg.highlights.map((h,i)=>(
-              <li key={i} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">{h}</li>
+          <ul className="flex mt-3" style={{ gap: '.5rem', flexWrap: 'wrap' }}>
+            {pkg.highlights.map((h, i) => (
+              <li key={i} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
+                {h}
+              </li>
             ))}
           </ul>
 
-          {/* CTA */}
           <div className="flex gap-3 mt-6">
-            <Link href={`/book/${pkg.id}`} className="px-5 py-3 rounded-2xl bg-black text-white font-semibold">
+            <Link
+              href={`/book/${pkg.id}`}
+              className="px-5 py-3 rounded-2xl bg-black text-white font-semibold"
+            >
               Book this trip
             </Link>
             <Link href="/" className="px-5 py-3 rounded-2xl border font-semibold">
@@ -101,7 +104,6 @@ export default async function PackageDetail({ params }: { params: { id: string }
             </Link>
           </div>
 
-          {/* Map */}
           {pkg.location && (
             <div className="mt-10">
               <h2 className="text-2xl font-semibold mb-2">Destination Map</h2>

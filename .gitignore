@@ -1,2 +1,127 @@
-node_modules
-cache
+# ===============================
+# OS FILES
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# PYTHON / DJANGO
+# ===============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.log
+*.pot
+*.pyc
+
+# Django specific
+db.sqlite3
+media/
+staticfiles/
+static_root/
+*.mo
+
+# Virtual environment
+venv/
+env/
+.venv/
+ENV/
+.Python
+
+# IDE / Editor
+.vscode/
+.idea/
+*.code-workspace
+
+# Pytest / coverage / reports
+htmlcov/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+test-results/
+.tox/
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# ===============================
+# NODE / NEXT.JS FRONTEND
+# ===============================
+# dependencies
+frontend/node_modules/
+frontend/.pnp/
+.pnp.js
+
+# production
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.next/
+dist/
+coverage/
+
+# ===============================
+# ENVIRONMENT VARIABLES
+# ===============================
+.env
+*.env
+.env.*
+
+# ===============================
+# MISC
+# ===============================
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+*.temp
+
+# ===============================
+# BACKUPS / GENERATED FILES
+# ===============================
+__MACOSX/
+*.zip
+*.tar
+*.gz
+
+# ===============================
+# PROJECT SPECIFIC
+# ===============================
+# SQLite backups or temp data
+backend/db.sqlite3
+backend/db.sqlite3-journal
+
+# Uploads / user files
+backend/media/
+backend/uploads/
+
+# Local settings overrides
+backend/backend/local_settings.py
+
+# Next.js cache
+frontend/.turbo/
+frontend/.vercel/
+
+# Coverage or reports
+frontend/coverage/
+frontend/junit.xml
+
+# Mac Finder metadata
+Icon?

@@ -1,4 +1,3 @@
-import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Hero from '../components/Hero';
 import FeaturesVitrine from '../components/FeaturesVitrine';
@@ -26,9 +25,9 @@ async function getPackages(): Promise<Package[]> {
         image:
           'https://images.unsplash.com/photo-1501601963120-2c39e44d9b49?q=80&w=1600&auto=format&fit=crop',
         galleryImages: [
-          'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=1600&auto=format&fit=crop', // Table Mountain / Lion's Head
-          'https://images.unsplash.com/photo-1534531173927-aeb928d54385?q=80&w=1600&auto=format&fit=crop', // V&A Waterfront wheel
-          'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=1600&auto=format&fit=crop', // Bo-Kaap houses
+          'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1534531173927-aeb928d54385?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=1600&auto=format&fit=crop',
         ],
         highlights: ['Table Mountain cableway', 'V&A Waterfront', 'Robben Island tour'],
         location: 'Cape Town, South Africa',
@@ -43,9 +42,9 @@ async function getPackages(): Promise<Package[]> {
         image:
           'https://images.unsplash.com/photo-1595232500888-c596e71d54d6?q=80&w=1600&auto=format&fit=crop',
         galleryImages: [
-          'https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?q=80&w=1600&auto=format&fit=crop', // Chapman’s Peak drive
-          'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?q=80&w=1600&auto=format&fit=crop', // Boulders Beach penguins
-          'https://images.unsplash.com/photo-1544989164-31dc3c645987?q=80&w=1600&auto=format&fit=crop', // Cape Point cliffs
+          'https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1544989164-31dc3c645987?q=80&w=1600&auto=format&fit=crop',
         ],
         highlights: [
           'Cape Point & Boulders penguins',
@@ -64,9 +63,9 @@ async function getPackages(): Promise<Package[]> {
         image:
           'https://images.unsplash.com/photo-1533616688418-7f55b78a3a59?q=80&w=1600&auto=format&fit=crop',
         galleryImages: [
-          'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop', // Vineyard cellar/tasting
-          'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1600&auto=format&fit=crop', // Safari savannah
-          'https://images.unsplash.com/photo-1578926375605-eaf7559b145c?q=80&w=1600&auto=format&fit=crop', // Lodge sunset
+          'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1600&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1578926375605-eaf7559b145c?q=80&w=1600&auto=format&fit=crop',
         ],
         highlights: ['Private wine tasting', 'Luxury game lodge', 'Sunset safari drives'],
         location: 'Stellenbosch, South Africa',
@@ -80,7 +79,7 @@ export default async function Home() {
 
   return (
     <main>
-      <Header />
+      {/* Header is rendered globally in app/layout.tsx — do not render it here */}
       <Hero
         title="Discover Cape Town & Beyond"
         subtitle="Experience the best of South Africa — mountains, oceans, vineyards, and safaris in one unforgettable journey."
