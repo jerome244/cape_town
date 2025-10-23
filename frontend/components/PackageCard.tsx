@@ -1,14 +1,15 @@
+// components/PackageCard.tsx
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export type Package = {
   id: number;
   title: string;
   subtitle: string;
-  price: number;
-  currency: string;
+  price: number;      // "From" price per person
+  currency: string;   // 'ZAR' for Cape Town packages
   cta: string;
   image: string;
   highlights: string[];
@@ -16,6 +17,20 @@ export type Package = {
 
 const FALLBACK_IMG =
   'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop';
+
+// Hydration-safe currency
+function Price({ amount, currency }: { amount: number; currency: string }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const text = mounted
+    ? new Intl.NumberFormat(currency === 'ZAR' ? 'en-ZA' : 'en-US', {
+        style: 'currency',
+        currency,
+        maximumFractionDigits: 0,
+      }).format(amount)
+    : `${currency === 'ZAR' ? 'R' : currency} ${amount}`;
+  return <span suppressHydrationWarning>{text}</span>;
+}
 
 export default function PackageCard({ p }: { p: Package }) {
   const [src, setSrc] = useState(p.image);
@@ -37,6 +52,17 @@ export default function PackageCard({ p }: { p: Package }) {
       setRating({ avg: 0, count: 0 });
     }
   }, [p.id]);
+
+  // "From" label only if we have a price
+  const priceLabel = useMemo(() => {
+    if (!p.price || p.price <= 0) return null;
+    return (
+      <>
+        From <Price amount={p.price} currency={p.currency} />{' '}
+        <span className="text-xs text-gray-500">/ person</span>
+      </>
+    );
+  }, [p.price, p.currency]);
 
   return (
     <article className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition card">
@@ -81,10 +107,7 @@ export default function PackageCard({ p }: { p: Package }) {
 
         {/* Price + View button (to details) */}
         <div className="mt-4 flex items-center justify-between">
-          <span className="text-xl font-bold">
-            {p.currency} {p.price}
-          </span>
-
+          <span className="text-sm font-semibold">{priceLabel}</span>
           <Link
             href={`/packages/${p.id}`}
             className="px-3 py-2 rounded-2xl border text-sm hover:bg-gray-100"
