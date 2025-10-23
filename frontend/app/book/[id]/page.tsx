@@ -8,36 +8,17 @@ type Package = {
   id: number;
   title: string;
   subtitle: string;
-  price: number;      // package base price per person (ZAR for CT)
-  currency: string;   // 'ZAR' for CT packages
   image: string;
   highlights: string[];
-  // no theme / addons here — packages are fixed
 };
 
-// server-safe currency formatter
-function formatPrice(amount: number, currency: string) {
-  const locale = currency === 'ZAR' ? 'en-ZA' : 'en-US';
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  } catch {
-    return `${currency === 'ZAR' ? 'R' : currency} ${amount.toLocaleString('en-ZA')}`;
-  }
-}
-
-// simple data source (replace with API if you have one)
 async function getPackages(): Promise<Package[]> {
+  // Replace with your API if needed
   return [
     {
       id: 1,
       title: 'Nature Package',
       subtitle: 'Outdoor & Scenic Explorers',
-      price: 6790,
-      currency: 'ZAR',
       image:
         'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
       highlights: ['Table Mountain', 'Kirstenbosch', 'Cape Point'],
@@ -46,8 +27,6 @@ async function getPackages(): Promise<Package[]> {
       id: 2,
       title: 'Adventure Package',
       subtitle: 'Thrill-seekers itinerary',
-      price: 7490,
-      currency: 'ZAR',
       image:
         'https://images.unsplash.com/photo-1506968430777-bf7784a87f22?q=80&w=1200&auto=format&fit=crop',
       highlights: ['Paragliding', 'Sandboarding', 'Kayaking'],
@@ -56,8 +35,6 @@ async function getPackages(): Promise<Package[]> {
       id: 3,
       title: 'Culture & Urban Style',
       subtitle: 'City lovers & culture enthusiasts',
-      price: 5590,
-      currency: 'ZAR',
       image:
         'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop',
       highlights: ['Bo-Kaap', 'Zeitz MOCAA', 'V&A Waterfront'],
@@ -109,20 +86,8 @@ export default async function BookPage({ params }: { params: { id: string } }) {
       <div className="max-w-5xl mx-auto px-4 mt-8 grid gap-8 md:grid-cols-[1.15fr,0.85fr]">
         {/* left: info */}
         <section aria-label="Package details">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-sm">
-              From {formatPrice(pkg.price, pkg.currency)} / person
-            </span>
-            <span className="inline-flex items-center rounded-full bg-gray-100 text-gray-700 px-3 py-1 text-sm">
-              Flexible dates
-            </span>
-            <span className="inline-flex items-center rounded-full bg-gray-100 text-gray-700 px-3 py-1 text-sm">
-              Prototype · no payment
-            </span>
-          </div>
-
           {pkg.highlights?.length ? (
-            <div className="mt-6">
+            <div>
               <h2 className="text-lg font-semibold">Package highlights</h2>
               <ul className="mt-2 flex flex-wrap gap-2">
                 {pkg.highlights.map((h, i) => (
@@ -136,18 +101,17 @@ export default async function BookPage({ params }: { params: { id: string } }) {
 
           <div className="mt-6 space-y-3 text-gray-700 leading-relaxed">
             <p>
-              This is a curated package. Activities are predefined and handled by your planner.
-              On this page you’ll just choose dates and travelers — super quick.
+              This is a curated package — activities are predefined and handled by your planner.
+              On this page you’ll just choose dates and travelers.
             </p>
             <p className="text-sm text-gray-500">
-              Want to tweak something later? You can discuss small adjustments after submitting your request.
+              You can discuss small adjustments with your planner after submitting your request.
             </p>
           </div>
         </section>
 
-        {/* right: sticky booking panel (NO options passed) */}
+        {/* right: sticky booking panel (money-free form) */}
         <aside id="booking" className="md:sticky md:top-6 bg-white rounded-2xl shadow p-5 h-max border">
-          {/* just pass pkg — no theme/showOptions/priceCatalog */}
           <BookingForm pkg={pkg} />
           <div className="mt-4 grid grid-cols-3 text-center text-xs text-gray-600">
             <div>Secure</div><div>Flexible</div><div>Human support</div>

@@ -2,15 +2,12 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type Package = {
   id: number;
   title: string;
   subtitle: string;
-  price: number;      // "From" price per person
-  currency: string;   // 'ZAR' for Cape Town packages
-  cta: string;
   image: string;
   highlights: string[];
 };
@@ -18,25 +15,11 @@ export type Package = {
 const FALLBACK_IMG =
   'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop';
 
-// Hydration-safe currency
-function Price({ amount, currency }: { amount: number; currency: string }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const text = mounted
-    ? new Intl.NumberFormat(currency === 'ZAR' ? 'en-ZA' : 'en-US', {
-        style: 'currency',
-        currency,
-        maximumFractionDigits: 0,
-      }).format(amount)
-    : `${currency === 'ZAR' ? 'R' : currency} ${amount}`;
-  return <span suppressHydrationWarning>{text}</span>;
-}
-
 export default function PackageCard({ p }: { p: Package }) {
   const [src, setSrc] = useState(p.image);
   const [rating, setRating] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
 
-  // Load rating data from localStorage (pj_reviews_<id>)
+  // Load rating preview (optional, from localStorage if you kept reviews)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(`pj_reviews_${p.id}`);
@@ -53,17 +36,6 @@ export default function PackageCard({ p }: { p: Package }) {
     }
   }, [p.id]);
 
-  // "From" label only if we have a price
-  const priceLabel = useMemo(() => {
-    if (!p.price || p.price <= 0) return null;
-    return (
-      <>
-        From <Price amount={p.price} currency={p.currency} />{' '}
-        <span className="text-xs text-gray-500">/ person</span>
-      </>
-    );
-  }, [p.price, p.currency]);
-
   return (
     <article className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition card">
       {/* Image */}
@@ -73,7 +45,7 @@ export default function PackageCard({ p }: { p: Package }) {
           alt={p.title}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          style={{ objectFit: 'cover' }}
+          className="object-cover"
           onError={() => setSrc(FALLBACK_IMG)}
           priority={p.id === 2}
         />
@@ -84,7 +56,7 @@ export default function PackageCard({ p }: { p: Package }) {
         <h3 className="font-semibold text-lg">{p.title}</h3>
         <p className="text-sm text-gray-600">{p.subtitle}</p>
 
-        {/* Star rating preview */}
+        {/* Star rating preview (optional) */}
         {rating.count > 0 && (
           <div className="mt-1 text-xs text-gray-700 flex items-center" style={{ gap: '.35rem' }}>
             <span aria-label={`${rating.avg} out of 5 stars`} style={{ letterSpacing: '.05em' }}>
@@ -105,9 +77,8 @@ export default function PackageCard({ p }: { p: Package }) {
           ))}
         </ul>
 
-        {/* Price + View button (to details) */}
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-sm font-semibold">{priceLabel}</span>
+        {/* CTA only (no price) */}
+        <div className="mt-4 flex items-center justify-end">
           <Link
             href={`/packages/${p.id}`}
             className="px-3 py-2 rounded-2xl border text-sm hover:bg-gray-100"
@@ -120,7 +91,7 @@ export default function PackageCard({ p }: { p: Package }) {
   );
 }
 
-/* --- helpers --- */
+/* helpers */
 function renderStars(n: number) {
   const clamped = Math.max(0, Math.min(5, n));
   const filled = '★★★★★'.slice(0, clamped);
