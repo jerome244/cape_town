@@ -1,4 +1,5 @@
-// lib/packages.ts
+// frontend/lib/packages.ts
+
 export type ActivityDetail = { name: string; description: string };
 
 export type Pkg = {
@@ -6,8 +7,8 @@ export type Pkg = {
   title: string;
   subtitle: string;
   image: string;
-  highlights: string[];
-  included: ActivityDetail[];  // detailed activities shown on the package page
+  highlights: string[];      // Short, emoji-rich chips for cards/list pages
+  included: ActivityDetail[]; // Full activity list for detail pages (if you choose to show it)
   location?: string;
 };
 
@@ -19,7 +20,14 @@ export async function getPackages(): Promise<Pkg[]> {
       subtitle: 'Outdoor & Scenic Explorers',
       image:
         'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
-      highlights: ['Table Mountain', 'Kirstenbosch', 'Cape Point'],
+      highlights: [
+        '🏔️ Table Mountain Hike',
+        '🌿 Kirstenbosch Gardens',
+        '🌊 Cape Point Nature Reserve',
+        '🚗 Chapman’s Peak Drive',
+        '🐧 Boulders Beach Penguins',
+        '🌅 Signal Hill Sunset Picnic',
+      ],
       included: [
         {
           name: 'Table Mountain Hike',
@@ -60,7 +68,14 @@ export async function getPackages(): Promise<Pkg[]> {
       subtitle: 'Thrill-seekers itinerary',
       image:
         'https://images.unsplash.com/photo-1506968430777-bf7784a87f22?q=80&w=1200&auto=format&fit=crop',
-      highlights: ['Paragliding', 'Sandboarding', 'Kayaking'],
+      highlights: [
+        '🦈 Shark Cage Diving',
+        '🪂 Paragliding (Lion’s Head)',
+        '🏜️ Sandboarding (Atlantis Dunes)',
+        '🛶 Sea Kayaking (False Bay)',
+        '🧗 Abseiling (Table Mountain)',
+        '🏄‍♂️ Surfing (Muizenberg)',
+      ],
       included: [
         {
           name: 'Shark Cage Diving (Gansbaai)',
@@ -101,7 +116,14 @@ export async function getPackages(): Promise<Pkg[]> {
       subtitle: 'City lovers & culture enthusiasts',
       image:
         'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop',
-      highlights: ['Bo-Kaap', 'Zeitz MOCAA', 'V&A Waterfront'],
+      highlights: [
+        '🏘️ Bo-Kaap Walking Tour',
+        '🎨 Zeitz MOCAA',
+        '⚓ V&A Waterfront',
+        '🏰 Castle of Good Hope',
+        '🎭 Woodstock Street Art & Market',
+        '🍸 Long & Bree Street Nightlife',
+      ],
       included: [
         {
           name: 'Robben Island Tour',

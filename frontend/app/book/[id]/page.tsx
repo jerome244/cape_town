@@ -3,44 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '../../../components/Footer';
 import BookingForm from '../../../components/BookingForm';
-
-type Package = {
-  id: number;
-  title: string;
-  subtitle: string;
-  image: string;
-  highlights: string[];
-};
-
-async function getPackages(): Promise<Package[]> {
-  // Replace with your API if needed
-  return [
-    {
-      id: 1,
-      title: 'Nature Package',
-      subtitle: 'Outdoor & Scenic Explorers',
-      image:
-        'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
-      highlights: ['Table Mountain', 'Kirstenbosch', 'Cape Point'],
-    },
-    {
-      id: 2,
-      title: 'Adventure Package',
-      subtitle: 'Thrill-seekers itinerary',
-      image:
-        'https://images.unsplash.com/photo-1506968430777-bf7784a87f22?q=80&w=1200&auto=format&fit=crop',
-      highlights: ['Paragliding', 'Sandboarding', 'Kayaking'],
-    },
-    {
-      id: 3,
-      title: 'Culture & Urban Style',
-      subtitle: 'City lovers & culture enthusiasts',
-      image:
-        'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop',
-      highlights: ['Bo-Kaap', 'Zeitz MOCAA', 'V&A Waterfront'],
-    },
-  ];
-}
+import { getPackages } from '../../../lib/packages';
 
 export default async function BookPage({ params }: { params: { id: string } }) {
   const list = await getPackages();
@@ -86,20 +49,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
       <div className="max-w-5xl mx-auto px-4 mt-8 grid gap-8 md:grid-cols-[1.15fr,0.85fr]">
         {/* left: info */}
         <section aria-label="Package details">
-          {pkg.highlights?.length ? (
-            <div>
-              <h2 className="text-lg font-semibold">Package highlights</h2>
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {pkg.highlights.map((h, i) => (
-                  <li key={i} className="px-3 py-1 rounded-full bg-gray-100 text-sm text-gray-700">
-                    {h}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          <div className="mt-6 space-y-3 text-gray-700 leading-relaxed">
+          <div className="space-y-3 text-gray-700 leading-relaxed">
             <p>
               This is a curated package — activities are predefined and handled by your planner.
               On this page you’ll just choose dates and travelers.
@@ -110,11 +60,16 @@ export default async function BookPage({ params }: { params: { id: string } }) {
           </div>
         </section>
 
-        {/* right: sticky booking panel (money-free form) */}
-        <aside id="booking" className="md:sticky md:top-6 bg-white rounded-2xl shadow p-5 h-max border">
+        {/* right: sticky booking panel */}
+        <aside
+          id="booking"
+          className="md:sticky md:top-6 bg-white rounded-2xl shadow p-5 h-max border"
+        >
           <BookingForm pkg={pkg} />
           <div className="mt-4 grid grid-cols-3 text-center text-xs text-gray-600">
-            <div>Secure</div><div>Flexible</div><div>Human support</div>
+            <div>Secure</div>
+            <div>Flexible</div>
+            <div>Human support</div>
           </div>
         </aside>
       </div>
