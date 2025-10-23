@@ -2,125 +2,79 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type Package = {
   id: number;
   title: string;
   subtitle: string;
   image: string;
-  highlights: string[]; // activities / chips
+  highlights: string[];
 };
 
 const FALLBACK_IMG =
   'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop';
 
-/* --- Manual chips carousel: buttons + touch/trackpad scroll, keyboard friendly --- */
-function ChipsCarousel({ items }: { items: string[] }) {
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(false);
-
-  function updateButtons() {
-    const el = wrapRef.current;
-    if (!el) return;
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanLeft(scrollLeft > 2);
-    setCanRight(scrollLeft + clientWidth < scrollWidth - 2);
-  }
-
-  useEffect(() => {
-    updateButtons();
-    const el = wrapRef.current;
-    if (!el) return;
-
-    const onScroll = () => updateButtons();
-    el.addEventListener('scroll', onScroll, { passive: true });
-
-    const onResize = () => updateButtons();
-    window.addEventListener('resize', onResize);
-
-    // Safe feature detect (no optional chaining after `new`)
-    let ro: ResizeObserver | null = null;
-    if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
-      ro = new (window as unknown as { ResizeObserver: typeof ResizeObserver }).ResizeObserver(() => {
-        updateButtons();
-      });
-      ro.observe(el);
-    }
-
-    return () => {
-      el.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onResize);
-      if (ro) ro.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function scrollByAmount(dir: 'left' | 'right') {
-    const el = wrapRef.current;
-    if (!el) return;
-    const amount = Math.max(180, Math.floor(el.clientWidth * 0.6));
-    el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
-  }
-
-  // keyboard support when the row has focus
-  function onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
-    if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      scrollByAmount('left');
-    } else if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      scrollByAmount('right');
-    }
-  }
-
+/**
+ * Marquee-style activities row (always auto-scrolls).
+ * - Duplicates items to create a seamless loop.
+ * - Pauses on hover/focus.
+ * - If the user has reduced-motion enabled, it still animates (per your request).
+ *   Change `forceMotion` to false if you want to respect reduced motion.
+ */
+function ActivitiesMarquee({ items, speedSec = 22, forceMotion = true }: { items: string[]; speedSec?: number; forceMotion?: boolean }) {
   if (!items?.length) return null;
+
+  const loop = items.concat(items); // duplicate for seamless loop
 
   return (
     <div className="relative mt-2">
-      {/* Scrollable chips row */}
       <div
-        ref={wrapRef}
-        className="flex gap-2 overflow-x-auto rounded-lg bg-gray-50 px-3 py-2 scroll-smooth"
-        tabIndex={0}
-        role="listbox"
-        aria-label="Activities"
-        onKeyDown={onKeyDown}
-        style={{ scrollBehavior: 'smooth' }}
+        className="overflow-hidden rounded-lg bg-gray-50 px-0 py-2"
+        // Pause on hover/focus
+        style={{}}
       >
-        {items.map((h, i) => (
-          <span
-            key={`${h}-${i}`}
-            role="option"
-            className="px-2 py-1 rounded-full bg-white border text-xs text-gray-700 whitespace-nowrap select-none"
+        <div className="relative">
+          <div
+            className={`flex gap-2 whitespace-nowrap will-change-transform ${
+              // If you want to honor reduced motion, replace with: 'motion-safe:animate-none'
+              forceMotion ? 'animate-marquee' : 'motion-safe:animate-marquee'
+            }`}
+            // Control speed via CSS var
+            style={{ ['--marquee-duration' as any]: `${speedSec}s` }}
           >
-            {h}
-          </span>
-        ))}
+            {loop.map((h, i) => (
+              <span
+                key={`${h}-${i}`}
+                className="mx-3 px-2 py-1 rounded-full bg-white border text-xs text-gray-700 select-none"
+                title={h}
+              >
+                {h}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Prev/Next buttons (show only when needed) */}
-      {canLeft && (
-        <button
-          type="button"
-          aria-label="Scroll activities left"
-          onClick={() => scrollByAmount('left')}
-          className="absolute left-1 top-1/2 -translate-y-1/2 rounded-full border bg-white/90 px-2 py-1 text-xs shadow hover:bg-white"
-        >
-          ‹
-        </button>
-      )}
-      {canRight && (
-        <button
-          type="button"
-          aria-label="Scroll activities right"
-          onClick={() => scrollByAmount('right')}
-          className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full border bg-white/90 px-2 py-1 text-xs shadow hover:bg-white"
-        >
-          ›
-        </button>
-      )}
+      {/* Local styles for marquee */}
+      <style jsx>{`
+        .animate-marquee {
+          animation: marquee var(--marquee-duration, 22s) linear infinite;
+        }
+        /* Pause on hover/focus within container */
+        .animate-marquee:focus,
+        .animate-marquee:hover {
+          animation-play-state: paused;
+        }
+        @keyframes marquee {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -178,10 +132,14 @@ export default function PackageCard({ p }: { p: Package }) {
           </div>
         )}
 
-        {/* Manual chips carousel */}
-        <ChipsCarousel items={p.highlights} />
+        {/* Activities at bottom — auto scrolling */}
+        <ActivitiesMarquee items={p.highlights} speedSec={22} />
+        {/* speedSec smaller = faster; e.g. 14 for snappier */}
+        {/* To slow down: speedSec={30} */}
+        {/* To honor reduced-motion: set forceMotion={false} */}
+        {/* <ActivitiesMarquee items={p.highlights} speedSec={22} forceMotion={false} /> */}
 
-        {/* CTA only */}
+        {/* CTA */}
         <div className="mt-4 flex items-center justify-end">
           <Link
             href={`/packages/${p.id}`}
