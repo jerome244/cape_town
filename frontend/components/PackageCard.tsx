@@ -1,141 +1,188 @@
 'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export type ActivityDetail = { name: string; description?: string };
 
 export type Package = {
-  id: number;
-  title: string;
-  subtitle: string;
-  image: string;
-  highlights?: string[];           // now optional
-  included?: ActivityDetail[];     // new optional (for fallback)
+  id?: number;
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  images?: string[];
+  highlights?: string[];
+  included?: ActivityDetail[];
 };
 
-const FALLBACK_IMG =
-  'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop';
+type Props = {
+  pkg?: Package;
+  href?: string;
+  rating?: number;
+  speedSec?: number;
+  slideMs?: number;
+};
 
-/**
- * Marquee-style activities row (auto-scrolls).
- */
-function ActivitiesMarquee({
-  items,
-  speedSec = 22,
-  forceMotion = true,
-}: { items: string[]; speedSec?: number; forceMotion?: boolean }) {
-  if (!items?.length) return null;
-  const loop = items.concat(items);
+const PLACEHOLDER = '/images/placeholder.jpg';
+
+export default function PackageCard({
+  pkg,
+  href,
+  rating = 5,
+  speedSec = 20,
+  slideMs = 3500,
+}: Props) {
+  // Skeleton while loading
+  if (!pkg) {
+    return (
+      <div className="rounded-2xl overflow-hidden border shadow-sm bg-white animate-pulse">
+        <div className="h-56 w-full bg-gray-200" />
+        <div className="p-4 space-y-2">
+          <div className="h-4 w-1/2 bg-gray-200 rounded" />
+          <div className="h-3 w-2/3 bg-gray-200 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  const safeTitle = pkg.title ?? 'Package';
+  const safeSubtitle = pkg.subtitle ?? '';
+  const to = href ?? (pkg.id != null ? `/packages/${pkg.id}` : '#');
+
+  // images list (purges empties, guarantees 1+)
+  const images = useMemo<string[]>(() => {
+    const list = (pkg.images ?? []).filter(Boolean) as string[];
+    if (list.length) return list;
+    if (pkg.image) return [pkg.image];
+    return [PLACEHOLDER];
+  }, [pkg.image, pkg.images]);
+
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const count = images.length;
+
+  // autoplay
+  useEffect(() => {
+    if (count <= 1 || paused) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % count), slideMs);
+    return () => clearInterval(t);
+  }, [count, paused, slideMs]);
+
+  // swipe
+  const touchX = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => (touchX.current = e.touches[0].clientX);
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchX.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchX.current;
+    touchX.current = null;
+    const TH = 40;
+    if (dx > TH) setIdx((i) => (i - 1 + count) % count);
+    else if (dx < -TH) setIdx((i) => (i + 1) % count);
+  };
+
+  // badges
+  const badges = useMemo(() => {
+    if (pkg.highlights?.length) return pkg.highlights;
+    if (pkg.included?.length) return pkg.included.map((a) => a.name).slice(0, 8);
+    return [];
+  }, [pkg]);
 
   return (
-    <div className="relative mt-2">
-      <div className="overflow-hidden rounded-lg bg-gray-50 px-0 py-2">
-        <div className="relative">
+    <Link
+      href={to}
+      className="group block rounded-2xl overflow-hidden border shadow-sm hover:shadow-lg transition-shadow bg-white"
+    >
+{/* IMAGE / CAROUSEL */}
+<div
+  className="relative h-56 w-full select-none"
+  onMouseEnter={() => setPaused(true)}
+  onMouseLeave={() => setPaused(false)}
+  onFocus={() => setPaused(true)}
+  onBlur={() => setPaused(false)}
+  onTouchStart={onTouchStart}
+  onTouchEnd={onTouchEnd}
+>
+  {images.map((src, i) => (
+    <div
+      key={src + i}
+      className={`absolute inset-0 transition-opacity duration-700 will-change-[opacity] ${
+        i === idx ? 'opacity-100' : 'opacity-0'
+      }`}
+      aria-hidden={i !== idx}
+    >
+      <Image
+        src={src}
+        alt={safeTitle}
+        fill
+        className="object-cover"
+        sizes="(max-width: 640px) 100vw, 640px"
+        priority={i === 0}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent" />
+    </div>
+  ))}
+
+  {/* Title overlay */}
+  <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
+    <div>
+      <h3 className="text-white text-lg font-semibold drop-shadow">{safeTitle}</h3>
+      <p className="text-white/90 text-sm drop-shadow">{safeSubtitle}</p>
+    </div>
+    <div className="hidden sm:flex items-center gap-1 text-yellow-300 text-sm">
+      {renderStars(rating)}
+    </div>
+  </div>
+
+  {/* Dots only (no arrows) */}
+  {count > 1 && (
+    <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+      {images.map((_, d) => (
+        <button
+          key={d}
+          aria-label={`Go to image ${d + 1}`}
+          onClick={(e) => { e.preventDefault(); setIdx(d); }}
+          className={`h-1.5 w-4 rounded-full transition-all ${
+            d === idx ? 'bg-white' : 'bg-white/50 hover:bg-white/70'
+          }`}
+        />
+      ))}
+    </div>
+  )}
+</div>
+
+
+      {/* BADGES MARQUEE (purge-safe class) */}
+      {!!badges.length && (
+        <div className="relative overflow-hidden bg-gray-50 border-t">
           <div
-            className={`flex gap-2 whitespace-nowrap will-change-transform ${
-              forceMotion ? 'animate-marquee' : 'motion-safe:animate-marquee'
-            }`}
-            style={{ ['--marquee-duration' as any]: `${speedSec}s` }}
+            className="flex gap-2 whitespace-nowrap animate-marquee"
+            style={
+              {
+                // @ts-ignore custom CSS var
+                '--marquee-duration': `${speedSec}s`,
+              } as React.CSSProperties
+            }
           >
-            {loop.map((h, i) => (
+            {badges.concat(badges).map((txt, i) => (
               <span
-                key={`${h}-${i}`}
-                className="mx-3 px-2 py-1 rounded-full bg-white border text-xs text-gray-700 select-none"
-                title={h}
+                key={`${txt}-${i}`}
+                className="mx-3 my-2 px-2 py-1 rounded-full bg-white border text-xs text-gray-700"
+                title={txt}
               >
-                {h}
+                {txt}
               </span>
             ))}
           </div>
         </div>
-      </div>
+      )}
 
-      <style jsx>{`
-        .animate-marquee { animation: marquee var(--marquee-duration, 22s) linear infinite; }
-        .animate-marquee:focus, .animate-marquee:hover { animation-play-state: paused; }
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
-    </div>
-  );
-}
+      {/* FOOTER */}
+<div className="p-4">
+  <span className="text-sm text-gray-500">View details</span>
+</div>
 
-export default function PackageCard({ p }: { p: Package }) {
-  const [src, setSrc] = useState(p.image);
-  const [rating, setRating] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
-
-  // derive marquee items: highlights -> included names -> []
-  const marqueeItems =
-    (p.highlights && p.highlights.length > 0
-      ? p.highlights
-      : (p.included?.map((a) => a.name) ?? [])
-    );
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(`pj_reviews_${p.id}`);
-      const list: Array<{ rating: number }> = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(list) && list.length) {
-        const sum = list.reduce((s, r) => s + (Number(r.rating) || 0), 0);
-        const avg = Math.round((sum / list.length) * 10) / 10;
-        setRating({ avg, count: list.length });
-      } else {
-        setRating({ avg: 0, count: 0 });
-      }
-    } catch {
-      setRating({ avg: 0, count: 0 });
-    }
-  }, [p.id]);
-
-  return (
-    <article className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition card">
-      {/* Image */}
-      <div className="relative w-full h-48 sm:h-52 overflow-hidden">
-        <Image
-          src={src}
-          alt={p.title}
-          fill
-          sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-cover"
-          onError={() => setSrc(FALLBACK_IMG)}
-          priority={p.id === 2}
-        />
-      </div>
-
-      {/* Content */}
-      <div className="px-4 py-4">
-        <h3 className="font-semibold text-lg">{p.title}</h3>
-        <p className="text-sm text-gray-600">{p.subtitle}</p>
-
-        {/* Star rating preview (optional) */}
-        {rating.count > 0 && (
-          <div className="mt-1 text-xs text-gray-700 flex items-center gap-1">
-            <span aria-label={`${rating.avg} out of 5 stars`} style={{ letterSpacing: '.05em' }}>
-              {renderStars(Math.round(rating.avg))}
-            </span>
-            <span>
-              {rating.avg} ({rating.count})
-            </span>
-          </div>
-        )}
-
-        {/* Activities at bottom — auto scrolling */}
-        <ActivitiesMarquee items={marqueeItems} speedSec={22} />
-
-        {/* CTA */}
-        <div className="mt-4 flex items-center justify-end">
-          <Link
-            href={`/packages/${p.id}`}
-            className="px-3 py-2 rounded-2xl border text-sm hover:bg-gray-100"
-          >
-            View
-          </Link>
-        </div>
-      </div>
-    </article>
+    </Link>
   );
 }
 
@@ -145,7 +192,7 @@ function renderStars(n: number) {
   const filled = '★★★★★'.slice(0, clamped);
   const empty = '☆☆☆☆☆'.slice(0, 5 - clamped);
   return (
-    <span>
+    <span aria-label={`${clamped} out of 5 stars`}>
       {filled}
       {empty}
     </span>

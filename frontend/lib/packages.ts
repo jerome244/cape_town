@@ -17,8 +17,7 @@ export async function getPackages(): Promise<Pkg[]> {
       id: 1,
       title: 'Nature Package',
       subtitle: 'Outdoor & Scenic Explorers',
-      image:
-        'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
+      image: '/images/nature/chapmans-peak-drive.jpg', // <— local image
       included: [
         {
           name: '🏔️ Table Mountain Hike',
@@ -64,7 +63,7 @@ export async function getPackages(): Promise<Pkg[]> {
           name: '🦈 Shark Cage Diving (Gansbaai)',
           description:
             'Day trip to meet great whites safely with expert crews and marine briefings.',
-          },
+        },
         {
           name: '🪂 Paragliding (Lion’s Head / Signal Hill)',
           description:

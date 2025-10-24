@@ -103,27 +103,8 @@ export default function BannerGallery({ images, title, subtitle, heightRem = 28 
         </div>
       )}
 
-      {/* Prev/Next */}
-      {imgs.length > 1 && (
-        <>
-          <button
-            aria-label="Previous image"
-            onClick={() => go(-1)}
-            className="absolute"
-            style={btnStyle('left')}
-          >
-            ‹
-          </button>
-          <button
-            aria-label="Next image"
-            onClick={() => go(1)}
-            className="absolute"
-            style={btnStyle('right')}
-          >
-            ›
-          </button>
-        </>
-      )}
+
+
 
       {/* Thumbnails */}
       {imgs.length > 1 && (

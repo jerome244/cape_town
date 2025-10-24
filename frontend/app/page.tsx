@@ -7,10 +7,10 @@ import CTABand from '../components/CTABand';
 import PackageCard from '../components/PackageCard';
 
 // ⬇️ use the shared source of truth
-import { getPackages } from '@/lib/packages'; // or: import { getPackages } from '../lib/packages';
+import { getPackages } from '@/lib/packages';
 
 export default async function Home() {
-  const packages = await getPackages(); // now ZAR + in sync everywhere
+  const packages = await getPackages();
 
   return (
     <main>
@@ -36,7 +36,7 @@ export default async function Home() {
             style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}
           >
             {packages.map((p) => (
-              <PackageCard key={p.id} p={p} />
+              <PackageCard key={p.id} pkg={p} />
             ))}
           </div>
         </div>
