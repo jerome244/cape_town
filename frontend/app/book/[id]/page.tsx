@@ -2,7 +2,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '../../../components/Footer';
-// import BookingForm from '../../../components/BookingForm'; // HIDDEN (booking flow replaced)
 import { getPackages } from '../../../lib/packages';
 
 const FALLBACK_IMG =
@@ -36,7 +35,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
 
   return (
     <main className="pb-24 antialiased leading-relaxed bg-[radial-gradient(80rem_40rem_at_10%_-20%,#e8f1ff_0%,transparent_40%),radial-gradient(70rem_40rem_at_110%_-10%,#ffe9e3_0%,transparent_35%)]">
-      {/* HERO (spacious & highly legible) */}
+      {/* HERO */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         <div className="relative overflow-hidden rounded-3xl h-[34rem] md:h-[44rem] lg:h-[52rem] shadow ring-1 ring-black/5 group">
           <Image
@@ -48,15 +47,13 @@ export default async function BookPage({ params }: { params: { id: string } }) {
             quality={90}
             className="transition duration-500 group-hover:scale-[1.02]"
             style={{
-              objectFit: 'cover',        // ensure crop (no distortion)
-              objectPosition: 'center',  // adjust if needed, e.g. 'center 30%'
+              objectFit: 'cover',
+              objectPosition: 'center',
             }}
           />
 
-          {/* stronger overlay for contrast */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-          {/* text block with ample padding & relaxed line-height */}
           <div className="absolute bottom-8 left-6 right-6 text-white">
             <div className="max-w-3xl rounded-2xl bg-black/35 backdrop-blur-sm ring-1 ring-white/15 px-6 py-5 space-y-3">
               <h1 className="text-4xl md:text-5xl font-semibold leading-tight tracking-tight">
@@ -84,25 +81,12 @@ export default async function BookPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {/* Layout */}
+      {/* LAYOUT */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid gap-8 md:grid-cols-[1.15fr,0.85fr]">
-        {/* Left: info */}
+        {/* LEFT */}
         <section aria-label="Package details" className="space-y-6">
           <div className="rounded-3xl border bg-white p-6 shadow-sm">
             <h2 className="text-lg font-semibold tracking-tight">What to know</h2>
-
-            {/* HIDDEN: descriptive paragraph about curated package */}
-            {/*
-            <div className="mt-2 space-y-4 text-gray-700">
-              <p>
-                This is a curated package — activities are predefined and handled by your planner.
-                On this page you’ll just choose dates and travelers.
-              </p>
-              <p className="text-sm text-gray-500">
-                You can discuss small adjustments with your planner after submitting your request.
-              </p>
-            </div>
-            */}
 
             {(pkg as any).highlights?.length ? (
               <ul className="mt-4 grid sm:grid-cols-2 gap-3">
@@ -116,7 +100,6 @@ export default async function BookPage({ params }: { params: { id: string } }) {
             ) : null}
           </div>
 
-          {/* FAQ (optional) */}
           {(pkg as any).faqs?.length ? (
             <div className="rounded-3xl border bg-white p-6 shadow-sm">
               <h3 className="text-lg font-semibold tracking-tight">FAQs</h3>
@@ -125,7 +108,9 @@ export default async function BookPage({ params }: { params: { id: string } }) {
                   <details key={i} className="group py-3">
                     <summary className="flex cursor-pointer items-center justify-between text-left font-medium marker:hidden">
                       <span>{f.q}</span>
-                      <span aria-hidden className="ml-4 transition group-open:rotate-45">＋</span>
+                      <span aria-hidden className="ml-4 transition group-open:rotate-45">
+                        ＋
+                      </span>
                     </summary>
                     <p className="mt-2 text-gray-700 text-sm">{f.a}</p>
                   </details>
@@ -135,57 +120,55 @@ export default async function BookPage({ params }: { params: { id: string } }) {
           ) : null}
         </section>
 
-        {/* Right: contact card (booking via contact) */}
+        {/* RIGHT: Contact card */}
         <aside id="booking" className="md:sticky md:top-6 h-max">
-          {/* HIDDEN: full booking panel with price, form, guarantees, callout */}
-          {/*
-          <div className="rounded-3xl border bg-white p-6 shadow-sm">
-            <div className="flex items-end justify-between">
-              <div>
-                <p className="text-sm text-gray-500">From</p>
-                <p className="text-2xl font-semibold">
-                  {typeof (pkg as any).price !== 'undefined'
-                    ? Intl.NumberFormat(undefined, { style: 'currency', currency: ((pkg as any).currency as string) || 'EUR' }).format(Number((pkg as any).price))
-                    : '—'}
-                </p>
-              </div>
-              <Link href="#details" className="text-sm underline text-gray-600 hover:text-gray-900">What’s included?</Link>
-            </div>
-
-            <div className="mt-5">
-              <BookingForm pkg={pkg as any} />
-            </div>
-
-            <div className="mt-4 grid grid-cols-3 text-center text-xs text-gray-600">
-              <div className="flex flex-col items-center gap-1"><span>🛡️</span> Secure</div>
-              <div className="flex flex-col items-center gap-1"><span>↩️</span> Flexible</div>
-              <div className="flex flex-col items-center gap-1"><span>🤝</span> Human support</div>
-            </div>
-
-            <div className="mt-5 rounded-2xl bg-gray-50 p-4 text-sm text-gray-700 ring-1 ring-gray-200">
-              Have special requests? <Link href="/contact" className="underline">Contact us</Link> and we’ll tailor the details.
-            </div>
-          </div>
-          */}
-
-          {/* Replacement: Contact details for booking */}
-          <div className="rounded-3xl border bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border bg-white/70 backdrop-blur p-6 ring-1 ring-black/5 shadow-sm">
             <h3 className="text-lg font-semibold tracking-tight">Book this trip</h3>
-            <p className="mt-1 text-gray-600">Contact us to confirm your dates and finalize your booking:</p>
+            <p className="mt-1 text-gray-600">
+              Contact us to confirm your dates and finalize your booking:
+            </p>
 
-            <div className="mt-4 space-y-3 text-gray-800">
-              <div>
-                <div className="text-sm text-gray-500">Email</div>
-                <a href="mailto:david.ndong@icloud.com" className="hover:underline">
-                  david.ndong@icloud.com
-                </a>
-              </div>
+            {/* CONTACT CARDS */}
+            <div className="mt-4 grid gap-4">
+              {/* Email */}
+              <a
+                href="mailto:david.ndong@icloud.com"
+                className="group flex items-start gap-3 rounded-2xl border bg-white p-4 hover:shadow-md transition"
+              >
+                <span className="shrink-0 rounded-xl bg-emerald-100 p-2 ring-1 ring-emerald-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15A2.25 2.25 0 012.25 17.25V6.75m19.5 0L12 13.5 2.25 6.75" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-sm text-gray-500">Email</div>
+                  <div className="mt-1 font-medium text-gray-900 break-all">
+                    david.ndong@icloud.com
+                  </div>
+                </div>
+              </a>
 
-              <div>
-                <div className="text-sm text-gray-500">Phone</div>
-                <div className="space-y-1">
-                  <a href="tel:+27753530288" className="block hover:underline">+27 753530288</a>
-                  <a href="tel:+27663240237" className="block hover:underline">+27 66 324 0237</a>
+              {/* Phone */}
+              <div className="flex items-start gap-3 rounded-2xl border bg-white p-4">
+                <span className="shrink-0 rounded-xl bg-indigo-100 p-2 ring-1 ring-indigo-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 6.75l3 3m0 0L9 6M5.25 9.75A11.25 11.25 0 0015 19.5l2.25-2.25m0 0l3 3m-3-3L15 12" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-sm text-gray-500">Call or WhatsApp</div>
+                  <ul className="mt-1 font-medium text-gray-900 space-y-1">
+                    <li>
+                      <a href="tel:+27753530288" className="hover:underline block">
+                        +27 75 353 0288
+                      </a>
+                    </li>
+                    <li>
+                      <a href="tel:+27663240237" className="hover:underline block">
+                        +27 66 324 0237
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
