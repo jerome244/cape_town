@@ -149,3 +149,5 @@ a { color: inherit; text-decoration: none; }
 .animate-marquee {
   animation: marquee var(--marquee-duration, 20s) linear infinite;
 }
+
+.img-wrap { position: relative; height: 100%; width: 100%; }

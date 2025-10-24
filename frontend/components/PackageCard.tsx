@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export type ActivityDetail = { name: string; description?: string };
 
@@ -19,22 +18,18 @@ export type Package = {
 type Props = {
   pkg?: Package;
   href?: string;
-  rating?: number;
-  speedSec?: number;   // marquee speed
-  slideSec?: number;   // seconds each slide is fully visible
+  slideSec?: number; // seconds each slide is visible
 };
 
-const PLACEHOLDER = '/images/placeholder.jpg';
+const FALLBACK_IMG =
+  'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1600&auto=format&fit=crop';
 
 export default function PackageCard({
   pkg,
   href,
-  rating = 5,
-  speedSec = 20,
   slideSec = 3.5,
 }: Props) {
   if (!pkg) {
-    // minimal skeleton during data fetch
     return (
       <div className="rounded-2xl overflow-hidden border shadow-sm bg-white animate-pulse">
         <div className="h-56 w-full bg-gray-200" />
@@ -50,13 +45,21 @@ export default function PackageCard({
   const safeSubtitle = pkg.subtitle ?? '';
   const to = href ?? (pkg.id != null ? `/packages/${pkg.id}` : '#');
 
-  // Build images list (always at least one)
+  // Build image list (at least one)
   const images = useMemo<string[]>(() => {
     const list = (pkg.images ?? []).filter(Boolean);
     if (list.length) return list;
     if (pkg.image) return [pkg.image];
-    return [PLACEHOLDER];
+    return [FALLBACK_IMG];
   }, [pkg.image, pkg.images]);
+
+  // Auto-rotate one visible image (no stacking)
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % images.length), Math.max(1, slideSec) * 1000);
+    return () => clearInterval(t);
+  }, [images.length, slideSec]);
 
   const badges = useMemo(() => {
     if (pkg.highlights?.length) return pkg.highlights;
@@ -64,94 +67,35 @@ export default function PackageCard({
     return [];
   }, [pkg]);
 
-  const N = images.length;
-  const cycle = `${Math.max(1, N) * slideSec}s`;
-
   return (
     <Link
       href={to}
       className="group block rounded-2xl overflow-hidden border shadow-sm hover:shadow-lg transition-shadow bg-white"
     >
-      {/* IMAGE / CSS-ONLY CAROUSEL */}
-      <div
-        className="relative h-56 w-full select-none"
-        style={
-          {
-            // total cycle duration shared by all slides
-            // @ts-expect-error css var
-            '--cycle': cycle,
-          } as React.CSSProperties
-        }
-      >
-{images.map((src, i) => (
-  <div
-    key={src + i}
-    className={N > 1 ? 'slide absolute inset-0' : 'absolute inset-0'}
-    style={N > 1 ? ({ animationDelay: `${i * slideSec}s` } as React.CSSProperties) : undefined}
-  >
-    <div className="img-wrap">
-      <Image
-        src={src}
-        alt={safeTitle}
-        fill
-        className="object-cover"
-        sizes="(max-width: 640px) 100vw, 640px"
-        priority={i === 0}
-      />
-    </div>
-    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent" />
-  </div>
-))}
-
-
-        {/* Title overlay */}
-        <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
-          <div>
-            <h3 className="text-white text-lg font-semibold drop-shadow">{safeTitle}</h3>
-            <p className="text-white/90 text-sm drop-shadow">{safeSubtitle}</p>
-          </div>
-          <div className="hidden sm:flex items-center gap-1 text-yellow-300 text-sm">
-            {renderStars(rating)}
-          </div>
-        </div>
-
-        {/* Component-scoped CSS for the crossfade */}
-        <style jsx>{`
-          .slide {
-            opacity: 0;
-            animation: xfade var(--cycle) linear infinite;
-          }
-          @keyframes xfade {
-            /* Each slide timeline (with per-slide delay):
-               0%–15%: fully visible
-               20%: faded out
-               100%: stay hidden until the cycle loops
-            */
-            0% { opacity: 1; }
-            15% { opacity: 1; }
-            20% { opacity: 0; }
-            100% { opacity: 0; }
-          }
-
-          /* Respect users who prefer reduced motion */
-          @media (prefers-reduced-motion: reduce) {
-            .slide { animation: none !important; opacity: 1 !important; }
-          }
-        `}</style>
+      {/* NAME FIRST — header ABOVE the image */}
+      <div className="px-4 py-3 border-b bg-white">
+        <h3 className="text-lg font-semibold text-gray-900">{safeTitle}</h3>
+        {!!safeSubtitle && <p className="text-sm text-gray-600">{safeSubtitle}</p>}
       </div>
 
-      {/* BADGES MARQUEE (uses global .animate-marquee) */}
+      {/* UNIFORM CROP: fixed aspect ratio (change to '16 / 9' if you prefer) */}
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: '4 / 3' }}>
+        <img
+          key={images[idx]}  /* fade per change */
+          src={images[idx] || FALLBACK_IMG}
+          alt={safeTitle}
+          className="absolute inset-0 h-full w-full object-cover opacity-0 data-[ready=true]:opacity-100 transition-opacity duration-500"
+          loading="lazy"
+          decoding="async"
+          onLoad={(e) => (e.currentTarget.dataset.ready = 'true')}
+          style={{ objectPosition: 'center center' }}
+        />
+      </div>
+
+      {/* BADGES MARQUEE (kept) */}
       {!!badges.length && (
         <div className="relative overflow-hidden bg-gray-50 border-t">
-          <div
-            className="flex gap-2 whitespace-nowrap animate-marquee"
-            style={
-              {
-                // @ts-expect-error css var
-                '--marquee-duration': `${speedSec}s`,
-              } as React.CSSProperties
-            }
-          >
+          <div className="flex gap-2 whitespace-nowrap animate-marquee">
             {badges.concat(badges).map((txt, i) => (
               <span
                 key={`${txt}-${i}`}
@@ -165,23 +109,10 @@ export default function PackageCard({
         </div>
       )}
 
-      {/* FOOTER (arrow removed) */}
+      {/* FOOTER */}
       <div className="p-4">
         <span className="text-sm text-gray-500">View details</span>
       </div>
     </Link>
-  );
-}
-
-/* helpers */
-function renderStars(n: number) {
-  const clamped = Math.max(0, Math.min(5, n));
-  const filled = '★★★★★'.slice(0, clamped);
-  const empty = '☆☆☆☆☆'.slice(0, 5 - clamped);
-  return (
-    <span aria-label={`${clamped} out of 5 stars`}>
-      {filled}
-      {empty}
-    </span>
   );
 }
