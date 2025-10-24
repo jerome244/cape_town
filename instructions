@@ -1,0 +1,44 @@
+✅ Run (build and start)
+
+From your repo root (where docker-compose.yml lives):
+
+docker compose up --build
+
+
+That will:
+
+build your frontend/Dockerfile
+
+start the container (usually accessible at http://localhost:3000
+)
+
+stream the logs live in your terminal
+
+If you’d rather run it in the background (detached):
+
+docker compose up --build -d
+
+🛑 Stop
+
+To gracefully stop and remove the containers:
+
+docker compose down
+
+
+If you only want to stop but not remove the container:
+
+docker compose stop
+
+
+You can bring it back quickly:
+
+docker compose start
+
+🔍 Check status
+docker compose ps
+
+🧹 Clean up (optional)
+
+Remove all stopped containers, unused images, and cache:
+
+docker system prune -f

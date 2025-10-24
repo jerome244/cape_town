@@ -16,8 +16,9 @@ export default async function Home() {
       <Hero
         title="Discover Cape Town & Beyond"
         subtitle="Experience the best of South Africa — mountains, oceans, vineyards, and safaris in one unforgettable journey."
-        bgImage="https://images.unsplash.com/photo-1501601963120-2c39e44d9b49?q=80&w=2400&auto=format&fit=crop"
+        bgImage="/images/hero/cape-town-frommers.jpg" // <- lives in frontend/public/images/hero/
       />
+
 
       {/* FEATURES target */}
       <section id="features" className="scroll-mt-24">
