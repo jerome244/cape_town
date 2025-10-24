@@ -63,12 +63,20 @@ export async function getPackages(): Promise<Pkg[]> {
       location: 'Cape Town, South Africa',
     },
     {
-      id: 2,
-      title: 'Adventure Package',
-      subtitle: 'Thrill-seekers itinerary',
-      image:
-        'https://images.unsplash.com/photo-1506968430777-bf7784a87f22?q=80&w=1200&auto=format&fit=crop',
-      // You can add an `images: []` array here too if you want rotation
+  id: 2,
+  title: 'Adventure Package',
+  subtitle: 'Thrill-seekers itinerary',
+  // cover image (first one shown)
+  image: '/images/adventure/Paragliding.jpg',
+  // carousel images used by PackageCard
+  images: [
+    '/images/adventure/Paragliding.jpg',
+    '/images/adventure/SA15a-Kayak-Simons-Town.jpg',
+    '/images/adventure/Sandboarding.webp',
+    '/images/adventure/shark-diving-2-days.webp',
+    '/images/adventure/Surfing.jpg',
+    '/images/adventure/L7-5--1523539421415797.jpg',
+  ],
       included: [
         {
           name: '🦈 Shark Cage Diving (Gansbaai)',
@@ -104,11 +112,20 @@ export async function getPackages(): Promise<Pkg[]> {
       location: 'Cape Town, South Africa',
     },
     {
-      id: 3,
-      title: 'Culture & Urban Style',
-      subtitle: 'City lovers & culture enthusiasts',
-      image:
-        'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1200&auto=format&fit=crop',
+  id: 3, // or whatever id that card uses
+  title: 'Culture & Urban Style',
+  subtitle: 'City lovers & culture enthusiasts',
+  image: '/images/culture/Long-Street.jpg', // cover shown first
+  images: [
+    '/images/culture/Long-Street.jpg',
+    '/images/culture/woodstock-street-art-lauren-YS.webp',
+    '/images/culture/castlegoodhope.jpg',
+    '/images/culture/images.jpg',                     // V&A (day)
+    '/images/culture/victoria-alfred-waterfront.jpg',// V&A (night)
+    '/images/culture/zeitz-mocaa.jpg',
+    '/images/culture/bo-kaap.jpg',
+    '/images/culture/banner_RobbenIsland.jpg',
+  ],
       included: [
         {
           name: '⛴️ Robben Island Tour',
