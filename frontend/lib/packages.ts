@@ -6,8 +6,9 @@ export type Pkg = {
   id: number;
   title: string;
   subtitle: string;
-  image: string;
-  included: ActivityDetail[]; // Full activity list for detail pages
+  image: string;          // first frame / fallback
+  images?: string[];      // optional slideshow sources (2+ to auto-rotate)
+  included: ActivityDetail[];
   location?: string;
 };
 
@@ -17,7 +18,16 @@ export async function getPackages(): Promise<Pkg[]> {
       id: 1,
       title: 'Nature Package',
       subtitle: 'Outdoor & Scenic Explorers',
-      image: '/images/nature/chapmans-peak-drive.jpg', // <— local image
+      image: '/images/nature/chapmans-peak-drive.jpg',
+      images: [
+        '/images/nature/chapmans-peak-drive.jpg',
+        '/images/nature/cape-point-nature-reserve.jpg',
+        '/images/nature/skeleton-gorge.png',
+        '/images/nature/kirstenbosch.jpg',
+        '/images/nature/platteklip-gorge.webp',
+        '/images/nature/boulders-penguins.jpg',
+        '/images/nature/signal-hill-sunset.jpg',
+      ],
       included: [
         {
           name: '🏔️ Table Mountain Hike',
@@ -58,6 +68,7 @@ export async function getPackages(): Promise<Pkg[]> {
       subtitle: 'Thrill-seekers itinerary',
       image:
         'https://images.unsplash.com/photo-1506968430777-bf7784a87f22?q=80&w=1200&auto=format&fit=crop',
+      // You can add an `images: []` array here too if you want rotation
       included: [
         {
           name: '🦈 Shark Cage Diving (Gansbaai)',

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 
 export type ActivityDetail = { name: string; description?: string };
 
@@ -20,8 +20,8 @@ type Props = {
   pkg?: Package;
   href?: string;
   rating?: number;
-  speedSec?: number;
-  slideMs?: number;
+  speedSec?: number;   // marquee speed
+  slideSec?: number;   // seconds each slide is fully visible
 };
 
 const PLACEHOLDER = '/images/placeholder.jpg';
@@ -31,10 +31,10 @@ export default function PackageCard({
   href,
   rating = 5,
   speedSec = 20,
-  slideMs = 3500,
+  slideSec = 3.5,
 }: Props) {
-  // Skeleton while loading
   if (!pkg) {
+    // minimal skeleton during data fetch
     return (
       <div className="rounded-2xl overflow-hidden border shadow-sm bg-white animate-pulse">
         <div className="h-56 w-full bg-gray-200" />
@@ -50,67 +50,46 @@ export default function PackageCard({
   const safeSubtitle = pkg.subtitle ?? '';
   const to = href ?? (pkg.id != null ? `/packages/${pkg.id}` : '#');
 
-  // images list (purges empties, guarantees 1+)
+  // Build images list (always at least one)
   const images = useMemo<string[]>(() => {
-    const list = (pkg.images ?? []).filter(Boolean) as string[];
+    const list = (pkg.images ?? []).filter(Boolean);
     if (list.length) return list;
     if (pkg.image) return [pkg.image];
     return [PLACEHOLDER];
   }, [pkg.image, pkg.images]);
 
-  const [idx, setIdx] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const count = images.length;
-
-  // autoplay
-  useEffect(() => {
-    if (count <= 1 || paused) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % count), slideMs);
-    return () => clearInterval(t);
-  }, [count, paused, slideMs]);
-
-  // swipe
-  const touchX = useRef<number | null>(null);
-  const onTouchStart = (e: React.TouchEvent) => (touchX.current = e.touches[0].clientX);
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchX.current == null) return;
-    const dx = e.changedTouches[0].clientX - touchX.current;
-    touchX.current = null;
-    const TH = 40;
-    if (dx > TH) setIdx((i) => (i - 1 + count) % count);
-    else if (dx < -TH) setIdx((i) => (i + 1) % count);
-  };
-
-  // badges
   const badges = useMemo(() => {
     if (pkg.highlights?.length) return pkg.highlights;
     if (pkg.included?.length) return pkg.included.map((a) => a.name).slice(0, 8);
     return [];
   }, [pkg]);
 
+  const N = images.length;
+  const cycle = `${Math.max(1, N) * slideSec}s`;
+
   return (
     <Link
       href={to}
       className="group block rounded-2xl overflow-hidden border shadow-sm hover:shadow-lg transition-shadow bg-white"
     >
-{/* IMAGE / CAROUSEL */}
-<div
-  className="relative h-56 w-full select-none"
-  onMouseEnter={() => setPaused(true)}
-  onMouseLeave={() => setPaused(false)}
-  onFocus={() => setPaused(true)}
-  onBlur={() => setPaused(false)}
-  onTouchStart={onTouchStart}
-  onTouchEnd={onTouchEnd}
->
-  {images.map((src, i) => (
-    <div
-      key={src + i}
-      className={`absolute inset-0 transition-opacity duration-700 will-change-[opacity] ${
-        i === idx ? 'opacity-100' : 'opacity-0'
-      }`}
-      aria-hidden={i !== idx}
-    >
+      {/* IMAGE / CSS-ONLY CAROUSEL */}
+      <div
+        className="relative h-56 w-full select-none"
+        style={
+          {
+            // total cycle duration shared by all slides
+            // @ts-expect-error css var
+            '--cycle': cycle,
+          } as React.CSSProperties
+        }
+      >
+{images.map((src, i) => (
+  <div
+    key={src + i}
+    className={N > 1 ? 'slide absolute inset-0' : 'absolute inset-0'}
+    style={N > 1 ? ({ animationDelay: `${i * slideSec}s` } as React.CSSProperties) : undefined}
+  >
+    <div className="img-wrap">
       <Image
         src={src}
         alt={safeTitle}
@@ -119,47 +98,56 @@ export default function PackageCard({
         sizes="(max-width: 640px) 100vw, 640px"
         priority={i === 0}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent" />
     </div>
-  ))}
-
-  {/* Title overlay */}
-  <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
-    <div>
-      <h3 className="text-white text-lg font-semibold drop-shadow">{safeTitle}</h3>
-      <p className="text-white/90 text-sm drop-shadow">{safeSubtitle}</p>
-    </div>
-    <div className="hidden sm:flex items-center gap-1 text-yellow-300 text-sm">
-      {renderStars(rating)}
-    </div>
+    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent" />
   </div>
-
-  {/* Dots only (no arrows) */}
-  {count > 1 && (
-    <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-      {images.map((_, d) => (
-        <button
-          key={d}
-          aria-label={`Go to image ${d + 1}`}
-          onClick={(e) => { e.preventDefault(); setIdx(d); }}
-          className={`h-1.5 w-4 rounded-full transition-all ${
-            d === idx ? 'bg-white' : 'bg-white/50 hover:bg-white/70'
-          }`}
-        />
-      ))}
-    </div>
-  )}
-</div>
+))}
 
 
-      {/* BADGES MARQUEE (purge-safe class) */}
+        {/* Title overlay */}
+        <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
+          <div>
+            <h3 className="text-white text-lg font-semibold drop-shadow">{safeTitle}</h3>
+            <p className="text-white/90 text-sm drop-shadow">{safeSubtitle}</p>
+          </div>
+          <div className="hidden sm:flex items-center gap-1 text-yellow-300 text-sm">
+            {renderStars(rating)}
+          </div>
+        </div>
+
+        {/* Component-scoped CSS for the crossfade */}
+        <style jsx>{`
+          .slide {
+            opacity: 0;
+            animation: xfade var(--cycle) linear infinite;
+          }
+          @keyframes xfade {
+            /* Each slide timeline (with per-slide delay):
+               0%–15%: fully visible
+               20%: faded out
+               100%: stay hidden until the cycle loops
+            */
+            0% { opacity: 1; }
+            15% { opacity: 1; }
+            20% { opacity: 0; }
+            100% { opacity: 0; }
+          }
+
+          /* Respect users who prefer reduced motion */
+          @media (prefers-reduced-motion: reduce) {
+            .slide { animation: none !important; opacity: 1 !important; }
+          }
+        `}</style>
+      </div>
+
+      {/* BADGES MARQUEE (uses global .animate-marquee) */}
       {!!badges.length && (
         <div className="relative overflow-hidden bg-gray-50 border-t">
           <div
             className="flex gap-2 whitespace-nowrap animate-marquee"
             style={
               {
-                // @ts-ignore custom CSS var
+                // @ts-expect-error css var
                 '--marquee-duration': `${speedSec}s`,
               } as React.CSSProperties
             }
@@ -177,11 +165,10 @@ export default function PackageCard({
         </div>
       )}
 
-      {/* FOOTER */}
-<div className="p-4">
-  <span className="text-sm text-gray-500">View details</span>
-</div>
-
+      {/* FOOTER (arrow removed) */}
+      <div className="p-4">
+        <span className="text-sm text-gray-500">View details</span>
+      </div>
     </Link>
   );
 }
