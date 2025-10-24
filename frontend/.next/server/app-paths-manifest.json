@@ -2,6 +2,6 @@
   "/page": "app/page.js",
   "/packages/[id]/page": "app/packages/[id]/page.js",
   "/book/[id]/page": "app/book/[id]/page.js",
-  "/terms/page": "app/terms/page.js",
-  "/about/page": "app/about/page.js"
+  "/about/page": "app/about/page.js",
+  "/terms/page": "app/terms/page.js"
 }
